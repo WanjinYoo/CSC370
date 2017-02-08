@@ -1,0 +1,67 @@
+1)
+Select id,year From productions Where id ~'Harry Potter' and year > 2011;
+                                                                      id                                                                       | year 
+-----------------------------------------------------------------------------------------------------------------------------------------------+------
+ "Brotherhood 2.0" (2007) {Harry Potter vs. Science! (#7.68)}                                                                                  | 2013
+ "Co-optitude" (2013) {Harry Potter and the Goblet of Fire (#1.36)}                                                                            | 2014
+ "James's Daily Movie Reviews" (2012) {Harry Potter and the Philosopher's Stone (#3.5)}                                                        | 2014
+ "Cute Girl Movie Review" (2013) {Harry Potter and the Deathly Hallows: Part 2 (#1.4)}                                                         | 2013
+ "Flat 666" (2017) {The Harry Potter Tag (#1.23)}                                                                                              | 2017
+ "Welshy Reviews" (2011) {Shameful Sequels: Harry Potter and the Woman in Black}                                                               | 2013
+ "Movies in Real Life" (2013) {Harry Potter in Real Life (#1.8)}                                                                               | 2013
+ "mental_floss: Misconceptions" (2014) {Misconceptions About Harry Potter (#1.29)}                                                             | 2015
+ "Nerdy Nummies" (2011) {Harry Potter Butterbeer Milkshake (#1.217)}                                                                           | 2016
+ "Antho fait son show" (2014) {Harry Potter}                                                                                                   | 2015
+ (111 rows)
+
+2)
+select id, character from roles where pid='Streep, Meryl' and id IN
+(select id from productions where year<1980 AND attr is NULL);
+               id                  |   character   
+-------------------------------------+---------------
+ Everybody Rides the Carousel (1975) | Stage 6
+ Julia (1977)                        | Anne Marie
+ Kramer vs. Kramer (1979)            | Joanna Kramer
+ Manhattan (1979)                    | Jill
+ The Deer Hunter (1978)              | Linda
+ The Seduction of Joe Tynan (1979)   | Karen Traynor
+ (6 rows)
+ 
+ 3)
+ Select id,character,billing from roles where pid~'Eastwood' and  id IN(Select id from directors where pid~'Leone');
+                   id                   | character | billing 
+----------------------------------------+-----------+---------
+ Per qualche dollaro in più (1965)      | Monco     |       1
+ Per un pugno di dollari (1964)         | Joe       |       1
+ Il buono, il brutto, il cattivo (1966) | Blondie   |       2
+(3 rows)
+
+4)
+Select id from productions where id IN(Select id from roles where pid~'Nimoy, Leonard' intersect Select id from roles where pid~'Hawking, Stephen');
+   id                         
+---------------------------------------------------
+ How William Shatner Changed the World (2005) (TV)
+ The Science of Star Trek (1995) (TV)
+(2 rows)
+
+5)
+Select id,pid,character from roles where id IN(Select id from productions where title = 'The Matrix' or title = 'The Matrix Reloaded') and 
+pid IN(Select pid from roles where id IN(Select id from productions where title = 'The Matrix') intersect Select pid from roles where 
+id IN(Select id from productions where title = 'The Matrix Reloaded'));
+   id             |         pid         |  character  
+----------------------------+---------------------+-------------
+ The Matrix (1999)          | Fishburne, Laurence | Morpheus
+ The Matrix (1999)          | Foster, Gloria (I)  | Oracle
+ The Matrix (1999)          | Moss, Carrie-Anne   | Trinity
+ The Matrix (1999)          | Reeves, Keanu       | Neo
+ The Matrix (1999)          | Weaving, Hugo       | Agent Smith
+ The Matrix Reloaded (2003) | Fishburne, Laurence | Morpheus
+ The Matrix Reloaded (2003) | Foster, Gloria (I)  | The Oracle
+ The Matrix Reloaded (2003) | Moss, Carrie-Anne   | Trinity
+ The Matrix Reloaded (2003) | Reeves, Keanu       | Neo
+ The Matrix Reloaded (2003) | Weaving, Hugo       | Agent Smith
+(10 rows)
+
+
+
+ 

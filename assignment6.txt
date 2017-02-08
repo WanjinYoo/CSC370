@@ -1,0 +1,87 @@
+Assignment 6
+WanjinYoo (V00832396)
+
+
+
+//Testing
+ATLER TABLE parts ADD PRIMARY KEY (pid);
+ATLER TABLE partshistory ADD PRIMARY KEY (opwhen,opuser);
+DELETE FROM parts WHERE pid = '0';
+Insert into parts VALUES (0,'Handle','Grey');
+Insert into parts VALUES (1,'Carseat','Blue');
+Insert into parts VALUES (2,'Bumper','Black');
+UPDATE parts SET color = 'Purple' Where pid = '1';
+DELETE FROM parts WHERE pid = '2';
+
+
+
+---------------------------------------------------
+            Table "public.parts"
+ Column |         Type          | Modifiers 
+--------+-----------------------+-----------
+ pid    | integer               | not null
+ pname  | character varying(40) | 
+ color  | character varying(20) | 
+Indexes:
+    "parts_pkey" PRIMARY KEY, btree (pid)
+Triggers:
+    change AFTER INSERT OR DELETE OR UPDATE ON parts FOR EACH ROW EXECUTE PROCEDURE trigger()
+------------------------------------------------------------
+
+
+The output (Select * from parts;) of \d parts :  
+ pid |  pname  | color  
+-----+---------+--------
+   0 | Handle  | Grey
+   1 | Carseat | Purple
+(2 rows)
+
+
+---------------------------------------------------
+            Table "public.partshistory"
+  Column   |            Type             | Modifiers 
+-----------+-----------------------------+-----------
+ pid       | integer                     | 
+ pname     | character varying(40)       | 
+ color     | character varying(20)       | 
+ operation | character(1)                | 
+ opwhen    | timestamp without time zone | not null
+ opuser    | character(20)               | not null
+Indexes:
+    "partshistory_pkey" PRIMARY KEY, btree (opwhen, opuser)
+------------------------------------------------------------
+
+
+
+The output(Select * from partshistory;) of partshistory :
+ pid |  pname  | color  | operation |           opwhen           |        opuser        
+-----+---------+--------+-----------+----------------------------+----------------------
+   0 | handle  | yellow | D         | 2016-11-15 13:25:28.219237 | wanjiny             
+   0 | Handle  | Grey   | I         | 2016-11-15 13:29:25.289394 | wanjiny             
+   1 | Carseat | Blue   | I         | 2016-11-15 13:29:42.413446 | wanjiny             
+   2 | Bumper  | Black  | I         | 2016-11-15 13:29:47.139032 | wanjiny             
+   1 | Carseat | Purple | U         | 2016-11-15 13:32:01.155191 | wanjiny             
+   2 | Bumper  | Black  | D         | 2016-11-15 13:32:25.953011 | wanjiny             
+(6 rows)
+
+
+//Trigger implementation 
+CREATE OR REPLACE FUNCTION trigger() RETURNS TRIGGER AS $change$
+  BEGIN
+    IF (TG_OP = 'UPDATE' ) THEN
+      INSERT INTO partshistory SELECT NEW.pid, NEW.pname, NEW.color, 'U', now(), user;
+      RETURN NEW;
+    ELSEIF (TG_OP = 'INSERT' ) THEN
+      INSERT INTO partshistory SELECT NEW.pid, NEW.pname, NEW.color, 'I', now(), user;
+      RETURN NEW;
+    ELSEIF (TG_OP = 'DELETE' ) THEN
+      INSERT INTO partshistory SELECT OLD.pid, OLD.pname, OLD.color, 'D', now(), user;
+      RETURN OLD;
+    END IF;
+    RETURN NULL;
+  END;
+$change$ Language plpgsql;
+
+CREATE TRIGGER change
+AFTER INSERT OR UPDATE OR DELETE ON parts
+  FOR EACH ROW EXECUTE PROCEDURE trigger();

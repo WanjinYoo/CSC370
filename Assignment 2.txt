@@ -1,0 +1,89 @@
+1)
+
+Select DISTINCT country from episodes natural join locations where episodeof ~'Game of Thrones' order by country;
+
+     country      
+------------------
+ Canada
+ Croatia
+ Iceland
+ Malta
+ Morocco
+ Northern Ireland
+ Spain
+ UK
+ USA
+(9 rows)
+2)
+imdb=> Select title,year,rank from directors natural join persons natural join ratings natural join productions where
+ lastname='Hitchcock' and firstname ='Alfred' and attr is null and votes >50000 order by rank DESC;
+        title         | year | rank 
+----------------------+------+------
+ Rear Window          | 1954 |  8.5
+ Psycho               | 1960 |  8.5
+ Vertigo              | 1958 |  8.4
+ North by Northwest   | 1959 |  8.4
+ Dial M for Murder    | 1954 |  8.2
+ Rebecca              | 1940 |  8.2
+ Strangers on a Train | 1951 |  8.1
+ Notorious            | 1946 |    8
+ Rope                 | 1948 |    8
+ The Birds            | 1963 |  7.7
+ (10 rows)
+
+3)Select title,year,rank from productions natural join roles natural join ratings where pid = 'Newman, Paul (I)' 
+intersect Select title,year,rank from productions natural join roles natural join ratings where pid = 'Redford, Robert (I)';
+                                     title                                       | year | rank 
+----------------------------------------------------------------------------------+------+------
+ Natalie - A Tribute to a Very Special Lady                                       | 1982 |  9.7
+ Robert Redford: Hollywood Outlaw                                                 | 2000 |  8.5
+ Paul Newman: Hollywood's Charming Rebel                                          | 1995 |  8.4
+ Our All Time Favourite Films (#9.11)                                             | 2010 |  8.3
+ The Sting                                                                        | 1973 |  8.3
+ La classe américaine                                                             | 1993 |  8.2
+ Butch Cassidy and the Sundance Kid                                               | 1969 |  8.1
+ Robert Redford on Paul Newman (#1.6)                                             | 2005 |  8.1
+ 100 Years at the Movies                                                          | 1994 |  8.1
+ Mickybo and Me                                                                   | 2004 |  7.3
+ 
+ 4)
+ Select pid,id,rank from directors natural join languages natural left join ratings 
+ where pid in(Select pid from directors natural join episodes  where episodeof ~ 'Hora Marcada') 
+ and language = 'English' order by pid;
+ 
+  pid            |                              id                              | rank 
+--------------------------+--------------------------------------------------------------+------
+ Cuarón, Alfonso          | Gravity (2013)                                               |  7.8
+ Cuarón, Alfonso          | "Believe" (2014) {Pilot (#1.1)}                              |  7.8
+ Cuarón, Alfonso          | Children of Men (2006)                                       |  7.9
+ de la Riva, Juan Antonio | Aztech (2017)                                                |     
+ del Toro, Guillermo      | "Carnival Row" (????)                                        |     
+ del Toro, Guillermo      | Mimic (1997)                                                 |  5.9
+ del Toro, Guillermo      | Pacific Rim (2013)                                           |    7
+ del Toro, Guillermo      | Crimson Peak (2015)                                          |  6.6
+ Gurrola, Alfredo (I)     | Cabalgando con la muerte (1989)                              |  6.2
+ Silva, Batan             | After Darkness (2016)                                        |     
+ (34 rows)
+ 
+ 5)
+ Select id AS lucas,idlinkedto AS kurosaka,relationship from productions natural join links natural join directors where pid ~'Lucas, George' and relationship ~'reference' and 
+idlinkedto in(Select id from directors where pid ~'Kurosawa, Akira');
+
+                lucas                        |              kurosaka               | relationship 
+-----------------------------------------------------+-------------------------------------+--------------
+ Star Wars (1977)                                    | Dersu Uzala (1975)                  | references
+ Star Wars (1977)                                    | Kakushi-toride no san-akunin (1958) | references
+ Star Wars (1977)                                    | Shichinin no samurai (1954)         | references
+ Star Wars (1977)                                    | Yôjinbô (1961)                      | references
+ Star Wars: Episode II - Attack of the Clones (2002) | Kagemusha (1980)                    | references
+ Star Wars: Episode II - Attack of the Clones (2002) | Shichinin no samurai (1954)         | references
+ Star Wars: Episode III - Revenge of the Sith (2005) | Shichinin no samurai (1954)         | references
+ Star Wars: Episode I - The Phantom Menace (1999)    | Kagemusha (1980)                    | references
+ Star Wars: Episode I - The Phantom Menace (1999)    | Kakushi-toride no san-akunin (1958) | references
+ Star Wars: Episode I - The Phantom Menace (1999)    | Kumonosu-jô (1957)                  | references
+ Star Wars: Episode I - The Phantom Menace (1999)    | Shichinin no samurai (1954)         | references
+(11 rows)
+ 
+ 
+ 
+
